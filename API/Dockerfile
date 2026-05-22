@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt
 COPY ./API /app/api
 
 # Ejecutar la aplicación
-CMD ["uvicorn", "api.api:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["uvicorn", "API.api:app", "--host", "0.0.0.0", "--port", "5000"]
