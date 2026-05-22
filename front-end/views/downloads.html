@@ -1,0 +1,42 @@
+
+    <div class="overflow-x-auto max-h-[600px]">
+        <table class="w-full text-left text-xs text-slate-300">
+            <thead
+                class="bg-slate-950 text-[10px] text-slate-400 uppercase tracking-wider sticky top-0 border-b border-slate-800">
+                <tr>
+                    <th class="py-3 px-5">Servicio Detectado</th>
+                    <th class="py-3 px-5">Puertos Asociados</th>
+                    <th class="py-3 px-5">Total</th>
+                    <th class="py-3 px-5 text-right">Descargas Rápidas</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60">
+                <tr ng-repeat="service in services | filter:searchText"
+                    class="hover:bg-slate-800/40 transition-colors group">
+                    <td class="py-3.5 px-5 font-bold text-slate-200 font-mono uppercase">
+                        {{ service.service_name }}
+                    </td>
+
+                    <td class="py-3.5 px-5 font-mono">
+                        {{ service.port}}
+                    </td>
+                    <td class="py-3.5 px-5 font-mono">
+                        {{ service.count}}
+                    </td>
+
+                    <td class="py-3.5 px-5 text-right flex justify-end gap-2">
+                        <button ng-click="downloadHostsForService(service)"
+                            class="px-3 py-1 text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-md border border-slate-700/80 hover:border-cyan-500/50 hover:bg-cyan-950/20 transition-all flex items-center gap-1.5 shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Descargar
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>

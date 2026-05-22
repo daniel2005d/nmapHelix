@@ -1,0 +1,42 @@
+<div class="overflow-x-auto max-h-[600px]">
+        <table class="w-auto text-left text-xs text-slate-300">
+            <thead
+                class="bg-slate-950 text-[10px] text-slate-400 uppercase tracking-wider sticky top-0 border-b border-slate-800">
+                <tr>
+                    <th class="py-3 px-5 text-center">Id</th>
+                    <th class="py-3 px-5 w-40 text-center">IP</th>
+                    <th class="py-3 px-5 w-100 text-center ">Name</th>
+                    <th class="py-3 px-5 text-center">OS</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60">
+                <tr ng-repeat="host in hosts | filter:searchText"
+                    class="hover:bg-slate-800/40 transition-colors group">
+                    <td class="py-3.5 px-5 font-bold text-slate-200 font-mono uppercase">
+                        {{ host.id }}
+                    </td>
+
+                    <td class="py-3.5 px-25 font-mono">
+                        {{ host.ip_address }}
+                    </td>
+                    <td class="py-3.5 px-40 font-mono">
+                        <input type="text" ng-model="host.hostname" 
+                        ng-focus="cacheOriginal('hostname',host)"
+                        ng-blur="updateprop($event, 'hostname', host, 'hosts')"
+                            class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 w-full sm:w-72 placeholder-slate-600 transition-all" />
+                        
+                    </td>
+
+                    <td class="py-3.5 px-40 font-mono">
+                        <input type="text" ng-model="host.os_name"
+                        ng-focus="cacheOriginal('os_name',host)"
+                        ng-blur="updateprop($event, 'os_name', host, 'hosts')"
+                            class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 w-full sm:w-72 placeholder-slate-600 transition-all" />
+                      
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+        
