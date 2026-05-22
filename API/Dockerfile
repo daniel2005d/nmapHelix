@@ -7,7 +7,7 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y curl python3-pip --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt /app/requirements.txt
+COPY .API/requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
 # Instalar dependencias
