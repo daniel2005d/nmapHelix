@@ -1,0 +1,189 @@
+
+  <!-- Menú de Vistas (Compacto, minimalista y adaptativo) -->
+  <div class="flex bg-slate-950 border border-slate-800 p-0.5 rounded-lg w-full lg:w-auto justify-center">
+  
+   
+    <button 
+        ng-click="setTab('inventory')" 
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all"
+        ng-class="currentTab === 'inventory' ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'text-slate-400 hover:text-slate-200'"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        </svg>
+        Tabla de Inventario
+    </button>
+    <button 
+        ng-click="setTab('services-download')" 
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all"
+        ng-class="currentTab === 'services-download' ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'text-slate-400 hover:text-slate-200'"
+        title="Exportar listado de hosts segmentados por servicios">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Descargas
+    </button>
+
+    <button 
+    ng-click="setTab('services-import')" 
+    class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all"
+    ng-class="currentTab === 'services-import' ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'text-slate-400 hover:text-slate-200'"
+    title="Exportar listado de hosts segmentados por servicios">
+    <label class="px-3 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700/80 cursor-pointer transition-all flex items-center gap-1.5 shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        Importar XML Nmap
+        <input type="file" id="fileInput" accept=".xml" class="hidden" />
+    </label>
+</button>
+
+<div class="flex gap-2 w-full sm:w-auto">
+    <input 
+        type="text" 
+        ng-model="searchText"
+        
+        placeholder="Buscar IP, servicio, puerto, OS..." 
+        class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 w-full sm:w-72 placeholder-slate-600 transition-all"
+        ng-disabled="hosts.length === 0" />
+</div>
+</div>
+
+<!-- PANTALLA 2: PRIORIDAD DE LA TABLA (A ancho completo para análisis profundo) -->
+<div class="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-2xl flex flex-col" ng-show="currentTab === 'inventory'">
+    
+
+    <!-- Tabla de datos de red -->
+    <div class="overflow-x-auto max-h-[700px]">
+        <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950 text-[10px] text-slate-400 uppercase tracking-wider sticky top-0 border-b border-slate-800">
+                <tr>
+                    <th class="py-3 px-5">Estado</th>
+                    <th class="py-3 px-5">Host IP</th>
+                    <th class="py-3 px-5">Plataforma / OS</th>
+                    <th class="py-3 px-5 text-center">Puerto</th>
+                    <th class="py-3 px-5">Servicio</th>
+                    <th class="py-3 px-5">Versión y Producto</th>
+                    
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-700/60">
+                <tr ng-repeat="row in filteredTableRows | filter:searchText" class="hover:bg-slate-800/40 transition-colors group">
+                    <td class="py-3.5 px-5">
+                        
+                        <button 
+                        ng-click="updateprop($event,'discovered',row)"
+                        class="w-12 h-6 rounded-full p-1 transition-all duration-300 flex items-center shadow-lg border border-slate-900/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"  ng-class="{'discovered-color':row.discovered}" style="width: 20px;">
+                            <path fill-rule="evenodd" d="M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z" clip-rule="evenodd" />
+                          </svg>
+                          
+                        </button>
+                    </td>
+                    <td class="py-3.5 px-5 font-mono font-medium text-slate-200">
+
+                        <span ng-if="!row.url">
+                            {{ row.ip }}
+                        </span>
+                        <a ng-href="{{row.url}}" ng-if="row.url" target="_blank">
+                            {{row.ip}}
+                        </a>
+                    </td>
+                    <td class="py-3.5 px-5">
+                        <div class="flex items-center gap-2">
+                            <span ng-switch="row.osFamily">
+                                <svg ng-switch-when="Windows" class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zM11.25 1.899L24 0v11.55H11.25V1.899zM11.25 12.45H24v11.55l-12.75-1.9v-9.65z"/></svg>
+                                <svg ng-switch-when="Linux" class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 14.5c0 .276-.224.5-.5.5s-.5-.224-.5-.5.224-.5.5-.5.5.224.5.5zm-.15-2.73a.5.5 0 01-.7 0l-.3-.3a.5.5 0 010-.7l2.15-2.15-2.15-2.15a.5.5 0 010-.7l.3-.3a.5.5 0 01.7 0l2.5 2.5a.5.5 0 010 .7l-2.5 2.5z"/></svg>
+                                <svg ng-switch-when="Apple" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.5-.63.73-1.18 1.87-1.03 2.98 1.12.09 2.27-.56 2.98-1.42z"/></svg>
+                                <svg ng-switch-default class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></svg>
+                            </span>
+                            <span class="truncate max-w-[200px]" title="{{row.os}}">{{ row.os }}</span>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-5 text-center font-bold">
+                        <span class="px-2 py-0.5 rounded font-mono text-[11px]" ng-class="getPortBadgeClass(row.riskLevel)">
+                            {{ row.port }}/{{ row.protocol }}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-5 text-slate-200 font-semibold font-mono">
+                        
+                        <input type="text" ng-model="row.service_name"
+                        ng-focus="cacheOriginal('service_name',row)"
+                          ng-keypress="updateprop($event,'service_name', row);" 
+                          ng-blur="updateprop($event,'service_name', row);"
+                          class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 w-full sm:w-72 placeholder-slate-600 transition-all"/>
+                    </td>
+                    <td class="py-3.5 px-5 text-xs text-slate-400 font-mono truncate max-w-[240px]" title="{{row.product}} {{row.version}}">
+                        
+                          <input type="text" ng-model="row.product_version"  
+                          ng-focus="cacheOriginal('product_version',row)"
+                          ng-keypress="updateprop($event,'product_version', row);" 
+                          ng-blur="updateprop($event,'product_version', row);"
+                          class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 w-full sm:w-72 placeholder-slate-600 transition-all"/>
+                    </td>
+                    
+                </tr>
+                <tr ng-if="filteredTableRows.length === 0">
+                    <td colspan="7" class="py-12 text-center text-slate-500">
+                        {{ hosts.length === 0 ? 'Ningún host mapeado. Importe un reporte de Nmap en formato XML para visualizar la tabla.' : 'No se encontraron registros que coincidan con la búsqueda.' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- PANTALLA 3: DESCARGAS POR SERVICIO -->
+<div class="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-2xl flex flex-col" ng-show="currentTab === 'services-download'">
+ 
+    <div class="overflow-x-auto max-h-[800px]">
+        <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950 text-[10px] text-slate-400 uppercase tracking-wider sticky top-0 border-b border-slate-800">
+                <tr>
+                    <th class="py-3 px-5">Servicio Detectado</th>
+                    <th class="py-3 px-5">Puertos Asociados</th>
+                    <th class="py-3 px-5">Total</th>
+                    <th class="py-3 px-5 text-right">Descargas Rápidas</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60">
+                <tr ng-repeat="service in services | filter:searchText" class="hover:bg-slate-800/40 transition-colors group">
+                    <td class="py-3.5 px-5 font-bold text-slate-200 font-mono uppercase">
+                        {{ service.service_name }}
+                    </td>
+                    
+                    <td class="py-3.5 px-5 font-mono">
+                        {{ service.port}}
+                    </td>
+                    <td class="py-3.5 px-5 font-mono">
+                        {{ service.count}}
+                    </td>
+
+                    <td class="py-3.5 px-5 text-right flex justify-end gap-2">
+                        <button 
+                            ng-click="downloadHostsForService(service)"
+                            class="px-3 py-1 text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-md border border-slate-700/80 hover:border-cyan-500/50 hover:bg-cyan-950/20 transition-all flex items-center gap-1.5 shadow"  >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Descargar
+                        </button>
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Sistema de Notificaciones Toast Personalizado -->
+<div class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+    <div ng-repeat="toast in toasts" class="p-4 rounded-xl border shadow-2xl backdrop-blur-md flex items-start gap-3 transition-all duration-300 transform translate-x-0"
+         ng-class="{'bg-emerald-950/90 border-emerald-500/40 text-emerald-300': toast.type === 'success', 'bg-red-950/90 border-red-500/40 text-red-300': toast.type === 'error', 'bg-indigo-950/90 border-indigo-500/40 text-indigo-300': toast.type === 'info', 'bg-amber-950/90 border-amber-500/40 text-amber-300': toast.type === 'warning'}">
+        <div class="flex-1 text-xs">
+            <strong class="font-bold uppercase block mb-1">{{toast.title}}</strong>
+            <p>{{toast.message}}</p>
+        </div>
+        <button class="text-slate-400 hover:text-slate-200 text-sm font-bold" ng-click="removeToast($index)">&times;</button>
+    </div>
+</div>

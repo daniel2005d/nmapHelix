@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="nmapHelix">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMAPHelix</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- AngularJS 1.8.2 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <script src="js/controllers.js"></script>
+    <style>
+        /* Personalización de Barras de Desplazamiento */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+        
+        /* Ajustes de cursor y drag para los elementos del nodo */
+        .node-element {
+            cursor: grab;
+        }
+        .node-element:active {
+            cursor: grabbing;
+        }
+        .node-element circle {
+            transition: stroke-width 0.2s, stroke 0.2s;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        .node-element:hover circle {
+            stroke-width: 2.5px !important;
+            stroke: #22d3ee !important;
+        }
+        
+        /* Cursor de paneo para el fondo del SVG */
+        .svg-canvas-bg {
+            cursor: move;
+        }
+
+        .discovered-color{
+            fill: red;
+            stroke:none;
+            transition: fill 0.3s ease;
+            
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col selection:bg-cyan-500 selection:text-slate-950" >
+
+    
+
+    <!-- Encabezado Compacto con el Menú Minimalista para alternar vistas -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-4 py-2.5 sticky top-0 z-40">
+        <div class="max-w-[1600px] mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
+            
+            <!-- Branding / Logo -->
+            <div class="flex items-center gap-3 w-full lg:w-auto">
+                <div class="p-1.5 bg-cyan-950/50 border border-cyan-500/30 rounded-lg text-cyan-400 glow-effect">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base font-bold bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent tracking-wider uppercase">NMAPHelix</h1>
+                        <span ng-if="isLocalMode" class="px-1 py-0.5 text-[7px] font-bold bg-amber-950/60 border border-amber-500/30 text-amber-400 rounded uppercase">Local</span>
+                        <span ng-if="!isLocalMode" class="px-1 py-0.5 text-[7px] font-bold bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded uppercase">API</span>
+                    </div>
+                    <p class="text-[9px] text-slate-400 font-mono">Visualizador Topológico Avanzado</p>
+                </div>
+            </div>
+
+          
+    </header>
+
+    <main class="flex-1 max-w-[1600px] w-full mx-auto p-3 lg:p-4 flex flex-col gap-3.5">
+        
+        <div ng-view class="animate-fade-in"></div>
+
+    </main>
+
+    <footer class="border-t border-slate-800 mt-auto py-3 px-6 text-center text-[10px] text-slate-500 bg-slate-950">
+        <p>NMAPHelix • Diseñado estrictamente en AngularJS con Arquitectura Desacoplada Escalable</p>
+    </footer>
+
+</body>
+</html>

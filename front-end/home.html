@@ -1,0 +1,47 @@
+<!-- Modal de Selección de Proyecto -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-slate-900 border border-slate-700 p-6 rounded-xl shadow-2xl w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-4 text-cyan-400">Bienvenido a NMAPHelix</h2>
+        <p class="mb-6 text-slate-400">Selecciona un proyecto para visualizar la topología o crea uno nuevo.</p>
+        
+        <div class="space-y-3 mb-6 max-h-60 overflow-y-auto pr-2">
+            <button ng-repeat="proj in savedProjects" 
+                    ng-click="selectProject(proj)"
+                    class="w-full text-left p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition border border-slate-700">
+                {{proj.name}}
+            </button>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700">
+            <button ng-click="createNewProject()"
+                    class="w-full p-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-semibold transition">
+                + Crear Nuevo Proyecto
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Aplicación Principal: Visible solo si hay proyecto -->
+<div class="p-6">
+    <header class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+        <div>
+            <h1 class="text-xl font-bold">Proyecto: <span class="text-cyan-400">{{activeProject.name}}</span></h1>
+            <p class="text-xs text-slate-500">Visualizando topología de red activa</p>
+        </div>
+        <button ng-click="closeProject()" class="text-sm bg-slate-800 px-4 py-2 rounded hover:bg-red-900/30 hover:text-red-400 transition">
+            Cerrar Proyecto
+        </button>
+    </header>
+    
+    <!-- Aquí está tu contenido original de nodos, badges y lógica -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Ejemplo de cómo se integra tu lógica de badges -->
+        <div class="col-span-3">
+            <div class="p-4 bg-slate-900 rounded-lg border border-slate-800">
+                <h2 class="text-lg mb-4 font-semibold text-slate-300">Resumen de Nodos</h2>
+                <!-- Aquí iría el resto de tu código original que renderiza los elementos -->
+                <div class="text-slate-500 italic">Espacio para tu visualización topológica...</div>
+            </div>
+        </div>
+    </div>
+</div>
