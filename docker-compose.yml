@@ -15,3 +15,5 @@ services:
     restart: always
     ports:
       - "9090:5000"
+    env_file:
+      - /containers/nmapHelix/.env
