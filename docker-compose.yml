@@ -6,10 +6,20 @@
 
 version: '3.8'
 services:
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    container_name: helix-web
+    image: helix:web
+    restart: always
+    ports:
+      - "9091:80"
+    
   backend:
     build:
-      context: .
-      dockerfile: ./API/Dockerfile
+      context: ./API
+      dockerfile: Dockerfile
     container_name: helix-api
     image: helix:api
     restart: always

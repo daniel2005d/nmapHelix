@@ -21,9 +21,14 @@ app.config(['$routeProvider', function ($routeProvider) {
         .otherwise({ redirectTo: '/' });
 }]);
 
-app.factory('ApiService', function ($http) {
+app.run(function ($rootScope, apiBaseUrl) {
+  $rootScope.apiBaseUrl = apiBaseUrl;
 
-    const baseUrl = "http://127.0.0.1:5000/api";
+});
+
+app.factory('ApiService', function ($http, apiBaseUrl) {
+
+    const baseUrl = apiBaseUrl;
 
 
     function handleError(error) {
