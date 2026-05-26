@@ -85,6 +85,11 @@ async def update_port(model: UpdateRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post('/bind_title/{project_id}')
+async def update_title(project_id:int):
+    http_services = db.get_http_services(project_id)
+    return {"status":"OK"}
+
 
 
 

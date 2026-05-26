@@ -75,12 +75,13 @@ class NexusMapperDB:
             addr = host_el.find('address').get('addr')
             hostname = host_el.findtext('hostnames/hostname', default=None)
             
+            
             # Upsert de Host
             host = session.query(Host).filter_by(ip_address=addr).first()
             if not host:
                 host = Host(project_id=project_id, ip_address=addr, hostname=hostname, status='up')
                 session.add(host)
-            else:
+            elif host.hostname is None:
                 host.hostname = hostname
             
             session.flush() # Para obtener el host.id
@@ -93,7 +94,7 @@ class NexusMapperDB:
                 svc_name = svc.get('name') if svc is not None else None
                 product = svc.get('product') if svc is not None else None
                 if product:
-                    product += " " + svc.get('version') if svc is not None else None
+                    product += " " + svc.get('version', '') if svc is not None else None
                 # Upsert de Port
                 port = session.query(Port).filter_by(host_id=host.id, port_number=pid).first()
                 if not port:
@@ -101,8 +102,10 @@ class NexusMapperDB:
                     
                     session.add(port)
                 else:
-                    port.service_name = svc_name
-                    port.product_version = product
+                    if port.service_name is None:
+                        port.service_name = svc_name
+                    if  port.product_version is None:
+                        port.product_version = product
         
         session.commit()
         session.close()
@@ -188,6 +191,16 @@ class NexusMapperDB:
         data = [{"service_name":p.service_name,"port":p.port_number, "count":p.count} for p in results]
         session.close()
         return data
+    
+    def get_http_services(self, project_id:int):
+        session = self.Session()
+        query = session.query(Port.id, Port.port_number, Host.ip_address). \
+            join(Host, Host.id == Port.host_id). \
+            filter(Host.project_id==project_id, Port.service_name.in_(['http','https','httpd','http-proxy','https-alt']))
+        
+        data = [row._asdict()  for row in query]
+        return data
+        
     
     def get_product_summary(self, project_id:int):
         session = self.Session()

@@ -1,18 +1,18 @@
 var app = angular.module('nmapHelix', ['ngRoute']);
 
 // 1. Interceptor para el loading automático
-app.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push(['$rootScope', '$q', function($rootScope, $q) {
+app.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push(['$rootScope', '$q', function ($rootScope, $q) {
         return {
-            request: function(config) {
+            request: function (config) {
                 $rootScope.isLoading = true;
                 return config;
             },
-            response: function(response) {
+            response: function (response) {
                 $rootScope.isLoading = false;
                 return response;
             },
-            responseError: function(rejection) {
+            responseError: function (rejection) {
                 $rootScope.isLoading = false;
                 return $q.reject(rejection);
             }
@@ -36,7 +36,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 app.run(function ($rootScope, apiBaseUrl) {
-  $rootScope.apiBaseUrl = apiBaseUrl;
+    $rootScope.apiBaseUrl = apiBaseUrl;
 
 });
 
@@ -111,14 +111,14 @@ app.controller('IndexController', ['$scope', 'ApiService', 'ProjectService', fun
     }
 
     const project_id = ProjectService.getProject();
-    if (project_id){
-        ApiService.get(`projects/${project_id}`).then(function(response){
-                        $scope.currentProject = response.data.name ;
-            });
+    if (project_id) {
+        ApiService.get(`projects/${project_id}`).then(function (response) {
+            $scope.currentProject = response.data.name;
+        });
     }
-    
 
-    
+
+
 }]);
 
 app.controller('HomeController', ['$scope', 'ProjectService', 'ApiService', '$location', function ($scope, ProjectService, ApiService, $location) {
@@ -153,7 +153,7 @@ app.controller('HomeController', ['$scope', 'ProjectService', 'ApiService', '$lo
 
 }]);
 
-app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'ProjectService', '$http','$timeout',
+app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'ProjectService', '$http', '$timeout',
     function ($scope, ApiService, $routeParams, ProjectService, $http, $timeout) {
         $scope.toasts = [];
         $scope.toggleState = false;
@@ -163,66 +163,83 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
         $scope.credentialsServices = [];
         //$scope.series = ['Servicio', 'Total'];
 
-        $scope.initChart = function(){
+        $scope.initChart = function () {
             Highcharts.chart('container', {
 
-                        chart: {
-                            type: 'column',
-                            
-                        },
+                chart: {
+                    type: 'column',
 
-                        title: {
-                            text: 'Servicios'
-                        },
+                },
 
-                        
-
-                        xAxis: {
-                            type: 'category'
-                        },
+                title: {
+                    text: 'Servicios'
+                },
 
 
-                        legend: {
-                            enabled: false
-                        },
 
-                        series: [{
-                            name: 'Labor Costs',
-                            data: $scope.chartSeries,
-                            
-                        
-                            borderRadius: 3,
-                            colorByPoint: true
-                        }]
+                xAxis: {
+                    type: 'category'
+                },
 
-                    });
+
+                legend: {
+                    enabled: false
+                },
+
+                series: [{
+                    name: 'Labor Costs',
+                    data: $scope.chartSeries,
+
+
+                    borderRadius: 3,
+                    colorByPoint: true
+                }]
+
+            });
 
         }
-          
+
         $scope.setTab = function (tabName) {
             $scope.currentTab = tabName;
 
-            if (tabName === 'services-discovered'){
-               $timeout($scope.initChart, 120);
+            if (tabName === 'services-discovered') {
+                $timeout($scope.initChart, 120);
 
             }
 
         };
-        
+
         $scope.copied = {};
-        $scope.copyCommand = function(cmd, index) {
-                navigator.clipboard.writeText(cmd).then(function() {
+        $scope.copyCommand = function (cmd, index) {
+            navigator.clipboard.writeText(cmd).then(function () {
                 $scope.copied[index] = true;
-                
+
                 // Volver a falso después de 2 segundos
-                $timeout(function() {
+                $timeout(function () {
                     $scope.copied[index] = false;
                 }, 2000);
-                
+
                 // Forzar actualización de la vista si es necesario
-                $scope.$apply(); 
-                });
-          };
+                $scope.$apply();
+            });
+        };
+
+        $scope.getPortCss = function(row){
+            const css = "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium  inset-ring "
+                         
+            var colorclass =  "bg-yellow-400/10 text-yellow-500 inset-ring-yellow-400/20";
+            if (row.service_name === 'ssh' 
+                || row.service_name === 'http' 
+                || row.service_name === 'httpd' 
+                || row.service_name === 'https'
+                || row.service_name === 'rpcbind'
+                || row.service_name === 'postgresql'
+                ){
+                colorclass = "bg-green-400/10 text-green-400 inset-ring-green-500/20"
+            }
+
+            return `${css} ${colorclass}`;
+        }
 
         $scope.getIconForService = function (serviceName) {
             const name = serviceName.toLowerCase();
@@ -241,28 +258,28 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
             return found ? found.icon : 'https://cdn-icons-png.flaticon.com/128/2991/2991108.png';
         };
 
-     
+
 
 
         $scope.init = function () {
             ApiService.get(`services/${project_id}`).then(function (response) {
-                
+
                 $scope.filteredTableRows = response.data;
                 $scope.credentialsServices = response.data;
 
                 const ipGroup = response.data.reduce((acc, item) => {
-                        if (!acc[item.ip]) {
-                            acc[item.ip] = [];
-                        }
-                        acc[item.ip].push(item.port);
-                        return acc;
-                        }, {});
-                
+                    if (!acc[item.ip]) {
+                        acc[item.ip] = [];
+                    }
+                    acc[item.ip].push(item.port);
+                    return acc;
+                }, {});
+
                 $scope.nmap = Object.keys(ipGroup).map(ip => {
-                            const ports = ipGroup[ip].join(',');
-                            return `nmap -Pn -n -T5 -sV -sC ${ip} -p ${ports} -oA nmap/${ip}_filterports`;
+                    const ports = ipGroup[ip].join(',');
+                    return `nmap -Pn -n -T5 -sV -sC ${ip} -p ${ports} -oA nmap/${ip}_filterports`;
                 });
-                
+
             })
 
             ApiService.get(`services/summary/${project_id}`).then(function (response) {
@@ -280,11 +297,11 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
                 $scope.chartSeries = [];
 
 
-                $scope.total_services.forEach((item)=>{
+                $scope.total_services.forEach((item) => {
                     $scope.chartSeries.push([item.service_name, item.count]);
                 })
 
-                
+
             });
 
 
@@ -297,20 +314,20 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
                 $scope.credentials = response.data;
 
             });
-            
-        }
-        
-            /* Comandos */
 
-        $scope.openCommandModal = function(row) { $scope.selectedRow = row; $scope.commandInput = $scope.selectedRow.commands; $scope.showCommandModal = true; };  
-        $scope.closeCommandModal = function() {
-                    $scope.showCommandModal = false;
-                    $scope.selectedRow = null; // Limpiar la fila seleccionada
-                    $scope.commandInput = '';  // Limpiar el contenido del comando
+        }
+
+        /* Comandos */
+
+        $scope.openCommandModal = function (row) { $scope.selectedRow = row; $scope.commandInput = $scope.selectedRow.commands; $scope.showCommandModal = true; };
+        $scope.closeCommandModal = function () {
+            $scope.showCommandModal = false;
+            $scope.selectedRow = null; // Limpiar la fila seleccionada
+            $scope.commandInput = '';  // Limpiar el contenido del comando
         };
-        $scope.sendCommand = function(row, commandInput){
-            ApiService.post('services/add_command', {"id":row.port_id, "command": commandInput}).then(function(response){
-                    $scope.closeCommandModal();
+        $scope.sendCommand = function (row, commandInput) {
+            ApiService.post('services/add_command', { "id": row.port_id, "command": commandInput }).then(function (response) {
+                $scope.closeCommandModal();
 
             }).catch(function (err) {
                 $scope.showNotification("Error al guardar el comando:", err.data.detail, "error");
@@ -319,7 +336,7 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
         /* Credenciales */
 
         $scope.openModal = function () {
-            
+
             $scope.showModal = true;
             // Inicializamos modalCred para limpiar campos de una edición anterior
             $scope.modalCred = {
@@ -341,29 +358,29 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
             $scope.showModal = false;
         };
 
-        $scope.saveCredential = function(){
+        $scope.saveCredential = function () {
             $scope.modalCred.ports = [];
-            $scope.credentialsServices.forEach((item)=>{
-                if (item.selected){
+            $scope.credentialsServices.forEach((item) => {
+                if (item.selected) {
                     $scope.modalCred.ports.push(item.port_id);
                 }
             })
-            
-            ApiService.post('credentials/create', $scope.modalCred).then(function(response){
+
+            ApiService.post('credentials/create', $scope.modalCred).then(function (response) {
                 $scope.closeModal();
-                $scope.init ();
+                $scope.init();
             });
         }
 
         /* Fin de Credenciales */
 
 
-        $scope.uploadFile = function (file) {
-            if (!file) return;
+        $scope.uploadFile = function () {
+
             var formData = new FormData();
             let files = document.getElementById('fileInput').files;
             for (let i = 0; i < files.length; i++) {
-               formData.append('files', files[i]); 
+                formData.append('files', files[i]);
             }
 
             // Usamos $http para enviar el archivo
@@ -374,7 +391,9 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
                 $scope.showNotification("Archivo procesado con éxito:", response.data.message, "info");
                 // Opcional: Recargar los datos del proyecto tras la subida
                 $scope.init();
+                document.getElementById('fileInput').value = null;
             }).catch(function (err) {
+                document.getElementById('fileInput').value = null;
                 $scope.showNotification("Error al subir archivo:", err.data.detail, "error");
             });
         };
@@ -386,10 +405,10 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
 
             row.originalValue[field] = row[field];
         };
-        
 
 
-        $scope.updateprop = function (event, field, row, service='ports') {
+
+        $scope.updateprop = function (event, field, row, service = 'ports') {
 
             // // 1. Comprobamos si el valor ha cambiado
             if (row.originalValue && row.originalValue[field]) {
@@ -402,24 +421,24 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
 
             if (event.which === 13 || event.type === 'blur' || event.type === 'click') {
                 var endpoint = ''
-                var post_data = {  "name": field, "value": row[field] };
+                var post_data = { "name": field, "value": row[field] };
                 if (field === 'discovered') {
                     row[field] = !row[field];
                 }
 
-                if (service === 'ports'){
+                if (service === 'ports') {
                     endpoint = 'services/update'
                     post_data.id = row.port_id;
                 }
-                else{
+                else {
                     endpoint = 'hosts/update'
                     post_data.id = row.id;
                 }
 
-                   ApiService.post(endpoint, post_data).then(function (response) {
-                        $scope.showNotification('Actualización de puerto', response.data.status, 'info');
-                    });
-                
+                ApiService.post(endpoint, post_data).then(function (response) {
+                    $scope.showNotification('Actualización de puerto', response.data.status, 'info');
+                });
+
             }
 
         }
