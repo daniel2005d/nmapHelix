@@ -1,36 +1,10 @@
- <div class="p-6">
 
-        <!-- Grid de tarjetas siguiendo el diseño de NMAPHelix -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <div ng-repeat="product in products | filter:productSearch"
-                class="bg-slate-900/60 border border-slate-800 rounded-lg p-5 hover:border-cyan-500/30 transition-all group shadow-lg">
 
-                <div class="flex items-center justify-between mb-4">
-                    <div
-                        class="w-12 h-12 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center p-2">
-                        <img ng-src="{{getIconForService(product.product_version)}}" alt="{{product.product_version}}"
-                            class="w-7 h-7 opacity-80 group-hover:opacity-100 transition-opacity"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/128/2991/2991108.png'">
-                    </div>
-                    <!-- Conteo de hosts -->
-                    <div class="text-right">
-                        <span class="text-lg font-black text-cyan-400">{{product.count}}</span>
-                        <p class="text-[9px] text-slate-500 uppercase font-semibold">Hosts</p>
-                    </div>
-                </div>
-
-                <!-- Versión del producto -->
-                <div class="mt-2">
-                    <h3 class="text-sm font-bold text-slate-200 truncate">{{product.product_version}}</h3>
-                    
-                </div>
-            </div>
+        <div class="p-1">
+            <div id="versionChart" style="height: 400px; min-width: 310px"></div>
         </div>
- <div class="p-6">
-
-     <div id="container"></div>
 
 
-
+ <div class="p-1">
+        <div id="container"></div>
 </div>

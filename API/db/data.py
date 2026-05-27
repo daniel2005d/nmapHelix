@@ -219,7 +219,7 @@ class NexusMapperDB:
         session = self.Session()
         results = session.query(Port.product_version, func.count(Host.ip_address).label("count")).join(Host) \
         .filter(Host.id == Port.host_id, Host.project_id==project_id, Port.service_name != 'tcpwrapped', Port.product_version != 'null') \
-        .group_by(Port.product_version).all()
+        .group_by(Port.product_version).order_by(func.count(Host.ip_address).desc()).all()
 
         data = [{"product_version":p.product_version, "count":p.count} for p in results]
         session.close()

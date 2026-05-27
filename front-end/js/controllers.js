@@ -161,9 +161,60 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
         const project_id = $routeParams.project_id;
         $scope.filteredTableRows = [];
         $scope.credentialsServices = [];
-        //$scope.series = ['Servicio', 'Total'];
+        $scope.serviceCategories = [];
+        $scope.serviceTotal = [];
 
+        $scope.versionChart = function () {
+            const maxValue  =  Math.max(...$scope.serviceTotal);
+            
+            Highcharts.chart('versionChart', {
+                chart: {
+                    type: 'cylinder',
+                    options3d: {
+                        enabled: true,
+                        alpha: 5,
+                        beta: 5,
+                        depth: 50,
+
+                    }
+                },
+                title: {
+                    text: 'Versiones'
+                },
+                xAxis: {
+                    categories: $scope.serviceCategories,
+                    labels: {
+                        rotation: -45,
+                        skew3d: true,
+                        
+                    }
+                },
+                yAxis: {
+                    max:maxValue,
+                    labels: {
+                        skew3d: true
+                    }
+                },
+
+                plotOptions: {
+                    series: {
+                        depth: 25,
+                        colorByPoint: true
+                    }
+                },
+                series: [{
+                    data: $scope.serviceTotal,
+                    name: 'Servicio',
+                    showInLegend: false
+                }]
+            });
+        }
+
+        /* Grafica de servicios */
         $scope.initChart = function () {
+            const data = $scope.chartSeries.map(item=>item[1]);
+            const maxValue  =  Math.max(...data);
+            
             Highcharts.chart('container', {
 
                 chart: {
@@ -174,13 +225,12 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
                 title: {
                     text: 'Servicios'
                 },
-
-
-
                 xAxis: {
                     type: 'category'
                 },
-
+                yAxis:{
+                    max:maxValue
+                },
 
                 legend: {
                     enabled: false
@@ -204,7 +254,7 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
 
             if (tabName === 'services-discovered') {
                 $timeout($scope.initChart, 120);
-
+                $timeout($scope.versionChart, 120);
             }
 
         };
@@ -224,41 +274,22 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
             });
         };
 
-        $scope.getPortCss = function(row){
+        $scope.getPortCss = function (row) {
             const css = "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium  inset-ring "
-                         
-            var colorclass =  "bg-yellow-400/10 text-yellow-500 inset-ring-yellow-400/20";
-            if (row.service_name === 'ssh' 
-                || row.service_name === 'http' 
-                || row.service_name === 'httpd' 
+
+            var colorclass = "bg-yellow-400/10 text-yellow-500 inset-ring-yellow-400/20";
+            if (row.service_name === 'ssh'
+                || row.service_name === 'http'
+                || row.service_name === 'httpd'
                 || row.service_name === 'https'
                 || row.service_name === 'rpcbind'
                 || row.service_name === 'postgresql'
-                ){
+            ) {
                 colorclass = "bg-green-400/10 text-green-400 inset-ring-green-500/20"
             }
 
             return `${css} ${colorclass}`;
         }
-
-        $scope.getIconForService = function (serviceName) {
-            const name = serviceName.toLowerCase();
-            const iconMapping = [
-                { pattern: /postgresql|postgres|psql/i, icon: '/images/services/postgresql.png' },
-                { pattern: /apache tomcat|tomcat/i, icon: '/images/services/tomcat.png' },
-                { pattern: /apache/i, icon: '/images/services/apache.png' },
-                { pattern: /ssh/i, icon: '/images/services/ssh.png' },
-                { pattern: /mysql/i, icon: '/images/services/mysql.png' },
-                { pattern: /signiant/i, icon: '/images/services/signiant.svg' },
-                { pattern: /java/i, icon: '/images/services/java.png' },
-                { pattern: /wildfly/i, icon: '/images/services/wildfly.png' },
-            ];
-
-            const found = iconMapping.find(item => item.pattern.test(name));
-            return found ? found.icon : 'https://cdn-icons-png.flaticon.com/128/2991/2991108.png';
-        };
-
-
 
 
         $scope.init = function () {
@@ -285,10 +316,15 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
             ApiService.get(`services/summary/${project_id}`).then(function (response) {
                 $scope.services = response.data;
 
+
             });
 
+            /* Versiones de Servicios  */
             ApiService.get(`services/product_summary/${project_id}`).then(function (response) {
                 $scope.products = response.data;
+                $scope.serviceCategories = response.data.map(item => item.product_version);
+                $scope.serviceTotal = response.data.map(item => item.count);
+
 
             });
 
@@ -320,26 +356,26 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
         /* Comandos */
 
         $scope.openCommandModal = function (row) { $scope.selectedRow = row; $scope.commandInput = $scope.selectedRow.commands; $scope.showCommandModal = true; };
-        $scope.openBannerModal = function(row){
-                $scope.showBannerModal = true;
-                if (row.banner){
-                    $scope.banner = row.banner;
-                }
-                else{
-                    ApiService.get(`services/banner/${row.port_id}`).then(function(response){
-                        if (response.data.status){
-                            $scope.banner = response.data.status;
-                        }
-                        else{
-                            $scope.showBannerModal = false;
-                        }
-                        
-                    });
-                }
-                
+        $scope.openBannerModal = function (row) {
+            $scope.showBannerModal = true;
+            if (row.banner) {
+                $scope.banner = row.banner;
+            }
+            else {
+                ApiService.get(`services/banner/${row.port_id}`).then(function (response) {
+                    if (response.data.status) {
+                        $scope.banner = response.data.status;
+                    }
+                    else {
+                        $scope.showBannerModal = false;
+                    }
+
+                });
+            }
+
         }
 
-        $scope.closeBannerModal = function(){
+        $scope.closeBannerModal = function () {
             $scope.showBannerModal = false;
             $scope.banner = null;
         }
