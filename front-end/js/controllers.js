@@ -280,6 +280,7 @@ app.controller('MainController', ['$scope', 'ApiService', '$routeParams', 'Proje
             var colorclass = "bg-yellow-400/10 text-yellow-500 inset-ring-yellow-400/20";
             if (row.service_name === 'ssh'
                 || row.service_name === 'http'
+                || row.service_name === 'http-proxy'
                 || row.service_name === 'httpd'
                 || row.service_name === 'https'
                 || row.service_name === 'rpcbind'
