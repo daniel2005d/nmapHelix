@@ -94,6 +94,7 @@ async def update_title(project_id:int):
         for service in http_services:
             title = discovery.get_http_title(f'{service["ip_address"]}:{service["port_number"]}')
             if title:
+                print(service)
                 print(f"Actualizando {title} de {service["id"]}")
                 db.update_port(service["id"], {'product_version':title})
             
