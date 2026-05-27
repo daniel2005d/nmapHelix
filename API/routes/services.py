@@ -89,14 +89,18 @@ async def update_port(model: UpdateRequest):
 
 @router.post('/bind_title/{project_id}')
 async def update_title(project_id:int):
-    http_services = db.get_http_services(project_id)
-    for service in http_services:
-        title = discovery.get_http_title(f'{service["ip_address"]}:{service["port_number"]}')
-        if title:
-            print(f"Actualizando {title} de {service["id"]}")
-            db.update_port(service["id"], {'product_version':title})
-        
-    return {"status":"OK"}
+    try:
+        http_services = db.get_http_services(project_id)
+        for service in http_services:
+            title = discovery.get_http_title(f'{service["ip_address"]}:{service["port_number"]}')
+            if title:
+                print(f"Actualizando {title} de {service["id"]}")
+                db.update_port(service["id"], {'product_version':title})
+            
+        return {"status":"OK"}
+    except Exception as e:
+        print(e)
+        raise HTTPException(400, detail=str(e))
 
 @router.get('/banner/{port_id}')
 async def update_title(port_id):

@@ -32,7 +32,7 @@ class Discover:
         sock.settimeout(10)
         sock.connect((ip, port))
         try:
-            banner = sock.recv(4096).decode(errors='ignore').strip()
+            banner = sock.recv(1024).decode(errors='ignore').strip()
             return banner
         #     while True:
         #         part = sock.recv(4096)
